@@ -23,15 +23,15 @@ public class PaypalController {
     }
 
     @PostMapping("/pay")
-    public String payment(@ModelAttribute("order") Order order) {
+    public String payment(@RequestBody Order order) {
         try {
             System.out.println(order);
-            Payment payment = service.createPayment(order.getPrice(), order.getCurrency(), order.getMethod(),
-                    order.getIntent(), order.getDescription(), "http://localhost:9090/" + CANCEL_URL,
+            Payment payment = service.createPayment(order.getPrice(), order.getDescription(), "http://localhost:9090/" + CANCEL_URL,
                     "http://localhost:9090/" + SUCCESS_URL);
             for(Links link:payment.getLinks()) {
                 if(link.getRel().equals("approval_url")) {
-                    return "redirect:"+link.getHref();
+                    System.out.println(link.getHref().substring(8));
+                    return link.getHref().substring(8);
                 }
             }
 

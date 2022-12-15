@@ -23,17 +23,13 @@ public class PaypalService {
     @Autowired
     private APIContext apiContext;
 
-
     public Payment createPayment(
             Double total,
-            String currency,
-            String method,
-            String intent,
             String description,
             String cancelUrl,
             String successUrl) throws PayPalRESTException{
         Amount amount = new Amount();
-        amount.setCurrency(currency);
+        amount.setCurrency("EUR");
         total = new BigDecimal(total).setScale(2, RoundingMode.HALF_UP).doubleValue();
         amount.setTotal("10");
 
@@ -45,10 +41,10 @@ public class PaypalService {
         transactions.add(transaction);
 
         Payer payer = new Payer();
-        payer.setPaymentMethod(method.toString());
+        payer.setPaymentMethod("PAYPAL");
 
         Payment payment = new Payment();
-        payment.setIntent(intent.toString());
+        payment.setIntent("SALE");
         payment.setPayer(payer);
         payment.setTransactions(transactions);
         RedirectUrls redirectUrls = new RedirectUrls();
