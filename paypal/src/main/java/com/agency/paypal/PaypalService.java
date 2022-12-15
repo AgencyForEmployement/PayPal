@@ -31,7 +31,8 @@ public class PaypalService {
         Amount amount = new Amount();
         amount.setCurrency("EUR");
         total = new BigDecimal(total).setScale(2, RoundingMode.HALF_UP).doubleValue();
-        amount.setTotal("10");
+        System.out.println(total);
+        amount.setTotal(total.toString());
 
         Transaction transaction = new Transaction();
         transaction.setDescription(description);

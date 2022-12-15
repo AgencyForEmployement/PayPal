@@ -1,6 +1,8 @@
 package com.agency.paypal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,15 +25,13 @@ public class PaypalController {
     }
 
     @PostMapping("/pay")
-    public String payment(@RequestBody Order order) {
+    public ResponseEntity<?> payment(@RequestBody Order order) {
         try {
-            System.out.println(order);
             Payment payment = service.createPayment(order.getPrice(), order.getDescription(), "http://localhost:9090/" + CANCEL_URL,
                     "http://localhost:9090/" + SUCCESS_URL);
             for(Links link:payment.getLinks()) {
                 if(link.getRel().equals("approval_url")) {
-                    System.out.println(link.getHref().substring(8));
-                    return link.getHref().substring(8);
+                    return new ResponseEntity<>(link.getHref(), HttpStatus.OK);
                 }
             }
 
@@ -39,12 +39,12 @@ public class PaypalController {
 
             e.printStackTrace();
         }
-        return "redirect:/";
+        return new ResponseEntity<>("redirect:/", HttpStatus.OK);
     }
 
     @GetMapping(value = CANCEL_URL)
     public String cancelPay() {
-        return "cancel";
+        return "redirect:http://localhost:4200/paypal-fail";
     }
 
     @GetMapping(value = SUCCESS_URL)
@@ -53,7 +53,7 @@ public class PaypalController {
             Payment payment = service.executePayment(paymentId, payerId);
             System.out.println(payment.toJSON());
             if (payment.getState().equals("approved")) {
-                return "success";
+                return "redirect:http://localhost:4200/paypal-success";
             }
         } catch (PayPalRESTException e) {
             System.out.println(e.getMessage());
