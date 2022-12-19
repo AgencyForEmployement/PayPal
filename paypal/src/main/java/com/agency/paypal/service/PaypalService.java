@@ -1,10 +1,13 @@
-package com.agency.paypal;
+package com.agency.paypal.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.agency.paypal.repository.PayPalRepository;
+import com.agency.paypal.model.PayPalTransaction;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +19,17 @@ import com.paypal.api.payments.RedirectUrls;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class PaypalService {
 
     @Autowired
     private APIContext apiContext;
+    @Autowired
+    private PayPalRepository repository;
+    @Autowired
+    private RestTemplate restTemplate;
 
     public Payment createPayment(
             Double total,
@@ -63,5 +71,11 @@ public class PaypalService {
         paymentExecute.setPayerId(payerId);
         return payment.execute(apiContext, paymentExecute);
     }
+
+    public void saveTransaction(PayPalTransaction t) {
+        repository.saveAndFlush(t);
+        restTemplate.postForObject("http://localhost:8082/paypal/save", t, String.class);
+    }
+
 
 }

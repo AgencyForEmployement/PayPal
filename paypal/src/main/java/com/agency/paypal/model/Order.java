@@ -1,4 +1,4 @@
-package com.agency.paypal;
+package com.agency.paypal.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

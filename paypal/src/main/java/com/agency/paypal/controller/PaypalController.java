@@ -1,5 +1,8 @@
-package com.agency.paypal;
+package com.agency.paypal.controller;
 
+import com.agency.paypal.model.Order;
+import com.agency.paypal.model.PayPalTransaction;
+import com.agency.paypal.service.PaypalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
+
+import java.time.LocalDateTime;
 
 @Controller
 public class PaypalController {
@@ -53,7 +58,19 @@ public class PaypalController {
             Payment payment = service.executePayment(paymentId, payerId);
             System.out.println(payment.toJSON());
             if (payment.getState().equals("approved")) {
+                service.saveTransaction(
+                        new PayPalTransaction(
+                                payment.getId(),
+                                payment.getPayer().getPayerInfo().getFirstName(),
+                                payment.getPayer().getPayerInfo().getLastName(),
+                                payment.getPayer().getPayerInfo().getEmail(),
+                                Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal()),
+                                payment.getTransactions().get(0).getAmount().getCurrency(),
+                                payment.getPayee().getEmail(),
+                                payment.getPayee().getFirstName() + " " + payment.getPayee().getLastName(),
+                                LocalDateTime.now()));
                 return "redirect:http://localhost:4200/paypal-success";
+
             }
         } catch (PayPalRESTException e) {
             System.out.println(e.getMessage());
