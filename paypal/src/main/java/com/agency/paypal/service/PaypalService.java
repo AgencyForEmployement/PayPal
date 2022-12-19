@@ -1,25 +1,18 @@
 package com.agency.paypal.service;
 
+import com.agency.paypal.model.PayPalTransaction;
+import com.agency.paypal.repository.PayPalRepository;
+import com.paypal.api.payments.*;
+import com.paypal.base.rest.APIContext;
+import com.paypal.base.rest.PayPalRESTException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.agency.paypal.repository.PayPalRepository;
-import com.agency.paypal.model.PayPalTransaction;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.paypal.api.payments.Amount;
-import com.paypal.api.payments.Payer;
-import com.paypal.api.payments.Payment;
-import com.paypal.api.payments.PaymentExecution;
-import com.paypal.api.payments.RedirectUrls;
-import com.paypal.api.payments.Transaction;
-import com.paypal.base.rest.APIContext;
-import com.paypal.base.rest.PayPalRESTException;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class PaypalService {
@@ -73,8 +66,8 @@ public class PaypalService {
     }
 
     public void saveTransaction(PayPalTransaction t) {
-        repository.saveAndFlush(t);
-        restTemplate.postForObject("http://localhost:8082/paypal/save", t, String.class);
+        repository.save(t);
+        restTemplate.postForObject("http://localhost:8081/paypal/save", t, String.class);
     }
 
 

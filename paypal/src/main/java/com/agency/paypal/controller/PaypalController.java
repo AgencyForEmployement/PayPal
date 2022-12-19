@@ -65,9 +65,10 @@ public class PaypalController {
                                 payment.getPayer().getPayerInfo().getLastName(),
                                 payment.getPayer().getPayerInfo().getEmail(),
                                 Double.parseDouble(payment.getTransactions().get(0).getAmount().getTotal()),
+                                payment.getTransactions().get(0).getDescription(),
                                 payment.getTransactions().get(0).getAmount().getCurrency(),
-                                payment.getPayee().getEmail(),
-                                payment.getPayee().getFirstName() + " " + payment.getPayee().getLastName(),
+                                payment.getTransactions().get(0).getPayee().getEmail(),
+                                payment.getTransactions().get(0).getPayee().getFirstName() + " " + payment.getTransactions().get(0).getPayee().getLastName(),
                                 LocalDateTime.now()));
                 return "redirect:http://localhost:4200/paypal-success";
 
