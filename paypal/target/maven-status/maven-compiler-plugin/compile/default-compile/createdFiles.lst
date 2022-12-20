@@ -1,6 +1,0 @@
-com\agency\paypal\PaypalService.class
-com\agency\paypal\PaypalApplication.class
-com\agency\paypal\PaypalConfig.class
-com\agency\paypal\SimpleCORSFilter.class
-com\agency\paypal\Order.class
-com\agency\paypal\PaypalController.class
