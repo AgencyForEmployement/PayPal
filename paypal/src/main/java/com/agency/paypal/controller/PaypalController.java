@@ -1,8 +1,10 @@
 package com.agency.paypal.controller;
 
+import com.agency.paypal.PaypalApplication;
 import com.agency.paypal.model.Order;
 import com.agency.paypal.model.PayPalTransaction;
 import com.agency.paypal.service.PaypalService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ public class PaypalController {
 
     public static final String SUCCESS_URL = "pay/success";
     public static final String CANCEL_URL = "pay/cancel";
+    final static Logger log = Logger.getLogger(PaypalApplication.class.getName());
 
     @GetMapping("/")
     public String home() {
@@ -36,12 +39,13 @@ public class PaypalController {
                     "http://localhost:9090/" + SUCCESS_URL);
             for(Links link:payment.getLinks()) {
                 if(link.getRel().equals("approval_url")) {
+                    log.info("Payment done with payment id " + payment.getId());
                     return new ResponseEntity<>(link.getHref(), HttpStatus.OK);
                 }
             }
 
         } catch (PayPalRESTException e) {
-
+            log.error("Payment failed. Something went wrong, try again later." );
             e.printStackTrace();
         }
         return new ResponseEntity<>("redirect:/", HttpStatus.OK);
@@ -49,6 +53,7 @@ public class PaypalController {
 
     @GetMapping(value = CANCEL_URL)
     public String cancelPay() {
+        log.warn("Payment canceled.");
         return "redirect:http://localhost:4200/paypal-fail";
     }
 
@@ -58,6 +63,7 @@ public class PaypalController {
             Payment payment = service.executePayment(paymentId, payerId);
             System.out.println(payment.toJSON());
             if (payment.getState().equals("approved")) {
+                log.info("Payment request is approved.");
                 service.saveTransaction(
                         new PayPalTransaction(
                                 payment.getId(),
@@ -70,11 +76,13 @@ public class PaypalController {
                                 payment.getTransactions().get(0).getPayee().getEmail(),
                                 payment.getTransactions().get(0).getPayee().getFirstName() + " " + payment.getTransactions().get(0).getPayee().getLastName(),
                                 LocalDateTime.now()));
+                log.info("Transaction id is " + paymentId);
                 return "redirect:http://localhost:4200/paypal-success";
 
             }
         } catch (PayPalRESTException e) {
             System.out.println(e.getMessage());
+            log.error("Payment with id " + paymentId + " is failed. Transaction aborted.");
         }
         return "redirect:/";
     }
