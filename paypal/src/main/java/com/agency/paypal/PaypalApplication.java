@@ -9,7 +9,7 @@ public class PaypalApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PaypalApplication.class, args);
-		log.info("Hello from PayPalApp! Welcome! :)");
+		log.info("Hello from PayPalApp! Welcome back! :)");
 	}
 
 }
