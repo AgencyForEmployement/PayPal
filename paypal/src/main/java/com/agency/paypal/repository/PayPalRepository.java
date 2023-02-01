@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PayPalRepository extends JpaRepository <PayPalTransaction,Long> {
-
+    PayPalTransaction findByPaymentId(String paymentId);
 }

@@ -67,7 +67,9 @@ public class PaypalService {
 
     public void saveTransaction(PayPalTransaction t) {
         repository.save(t);
-        restTemplate.postForObject("http://localhost:8081/paypal/save", t, String.class);
+    }
+    public PayPalTransaction findByPaymentId(String paymentId) {
+        return repository.findByPaymentId(paymentId);
     }
 
 
